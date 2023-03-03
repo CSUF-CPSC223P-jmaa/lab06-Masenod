@@ -65,12 +65,14 @@ def planet(mass):
     """Construct a planet of some mass."""
     assert mass > 0
     "*** YOUR CODE HERE ***"
+    return ['planet', mass]
 
 
 def mass(w):
     """Select the mass of a planet."""
     assert is_planet(w), 'must call mass on a planet'
     "*** YOUR CODE HERE ***"
+    return w[1]
 
 
 def is_planet(w):
@@ -127,7 +129,17 @@ def balanced(m):
     True
     """
     "*** YOUR CODE HERE ***"
-
+    if length(left(m))*total_weight(end(left(m))) == length(right(m))*total_weight(end(right(m))):
+       if is_mobile(end(left(m))) and is_mobile(end(right(m))):
+           return balanced(end(left(m))) and balanced(end(right(m)))
+       elif is_mobile(end(left(m))):
+           return balanced(end(left(m)))
+       elif is_mobile(end(right(m))):
+           return balanced(end(right(m)))
+       else:
+           return True
+    else:
+        return False
 
 def totals_tree(m):
     """Return a tree representing the mobile with its total weight at the root.
@@ -159,6 +171,10 @@ def totals_tree(m):
     True
     """
     "*** YOUR CODE HERE ***"
+    if is_planet(m):
+        return tree(total_weight(m))
+    else:
+        return tree(total_weight(m), [totals_tree(end(left(m)))]+[totals_tree(end(right(m)))])
 
 
 def replace_loki_at_leaf(t, lokis_replacement):
@@ -191,6 +207,13 @@ def replace_loki_at_leaf(t, lokis_replacement):
     True
     """
     "*** YOUR CODE HERE ***"
+    if is_leaf(t) and label(t) == 'loki':
+       return tree(lokis_replacement)
+    new_branches = []
+    for b in branches(t):
+        new_branches += [replace_loki_at_leaf(b, lokis_replacement)]
+    return tree(label(t), new_branches)
+
 
 
 def has_path(t, word):
@@ -225,6 +248,16 @@ def has_path(t, word):
     """
     assert len(word) > 0, 'no path for empty word.'
     "*** YOUR CODE HERE ***"
+    first = word[0]
+    last = word[1:]
+    if label(t) != first:
+        return False
+    if len(word) == 1:
+        return True
+    for b in branches(t):
+        if has_path(b, last):
+            return True
+    return False
 
 
 def str_interval(x):
